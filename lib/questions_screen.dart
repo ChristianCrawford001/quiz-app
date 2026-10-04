@@ -6,9 +6,11 @@ class QuestionsScreen extends StatefulWidget {
   const QuestionsScreen({
     super.key,
     required this.onSelectAnswer,
+    required this.score,
   });
 
   final void Function(String answer) onSelectAnswer;
+  final int score;
 
   @override
   State<QuestionsScreen> createState() {
@@ -21,10 +23,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
   void answerQuestion(String selectedAnswer) {
     widget.onSelectAnswer(selectedAnswer);
-    // currentQuestionIndex = currentQuestionIndex + 1;
-    // currentQuestionIndex += 1;
+
     setState(() {
-      currentQuestionIndex++; // increments the value by 1
+      currentQuestionIndex++;
     });
   }
 
@@ -41,9 +42,19 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
+              'Score: ${widget.score}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 30),
+            Text(
               currentQuestion.text,
               style: const TextStyle(
-                color:  Color.fromARGB(255, 201, 153, 251),
+                color: Color.fromARGB(255, 201, 153, 251),
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
