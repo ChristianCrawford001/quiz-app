@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 
+import 'package:adv_basics/high_scores_screen.dart';
+
 class StartScreen extends StatelessWidget {
-  const StartScreen(this.startQuiz, {super.key});
+  const StartScreen(
+    this.startQuiz, {
+    super.key,
+    required this.highScores,
+  });
 
   final void Function() startQuiz;
+  final List<int> highScores;
 
   @override
   Widget build(context) {
@@ -14,7 +21,10 @@ class StartScreen extends StatelessWidget {
           Image.asset(
             'assets/images/quiz-logo.png',
             width: 300,
-            color: const Color.fromARGB(150, 255, 255, 255),
+            color: Theme.of(context)
+                .colorScheme
+                .onSurface
+                .withOpacity(0.75),
           ),
           // Opacity(
           //   opacity: 0.6,
@@ -26,20 +36,31 @@ class StartScreen extends StatelessWidget {
           const SizedBox(height: 80),
           Text(
             'Learn Flutter the fun way!',
-            style: const TextStyle(
-              color: Color.fromARGB(255, 237, 223, 252),
-              fontSize: 24,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 30),
           OutlinedButton.icon(
             onPressed: startQuiz,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.white,
-            ),
             icon: const Icon(Icons.arrow_right_alt),
             label: const Text('Start Quiz'),
-          )
+          ),
+          const SizedBox(height: 15),
+
+          // L7: Navigate to the High Scores screen.
+          OutlinedButton.icon(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => HighScoresScreen(
+                    highScores: highScores,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.emoji_events),
+            label: const Text('High Scores'),
+          ),
         ],
       ),
     );
