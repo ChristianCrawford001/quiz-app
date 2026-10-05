@@ -23,50 +23,60 @@ class Quiz extends StatefulWidget {
 class _QuizState extends State<Quiz> {
   List<String> selectedAnswers = [];
 
-  // L7: High scores are stored for the current app session.
-  // L9 would be used later if scores need to persist after closing the app.
-  final List<int> highScores = [];
-
   var activeScreen = 'start-screen';
+
+  // L4: Track the score live during the quiz.
+  var score = 0;
+
+  // L7: Store high scores during the current app session.
+  // Permanent score storage would be part of L9.
+  final List<int> highScores = [];
 
   void switchScreen() {
     setState(() {
       selectedAnswers = [];
+      score = 0;
       activeScreen = 'questions-screen';
     });
   }
 
   void chooseAnswer(String answer) {
-    selectedAnswers.add(answer);
+    final questionIndex = selectedAnswers.length;
 
-    if (selectedAnswers.length == questions.length) {
-      var score = 0;
+    setState(() {
+      selectedAnswers.add(answer);
 
-      for (var i = 0; i < selectedAnswers.length; i++) {
-        if (selectedAnswers[i] == questions[i].answers[0]) {
-          score++;
+      // L4: Increase the live score when the answer is correct.
+      if (answer == questions[questionIndex].answers[0]) {
+        score++;
+      }
+
+      if (selectedAnswers.length == questions.length) {
+        // L7: Save the completed quiz score.
+        highScores.add(score);
+
+        // Sort scores from highest to lowest.
+        highScores.sort(
+          (a, b) => b.compareTo(a),
+        );
+
+        // Keep only the top 5 scores.
+        if (highScores.length > 5) {
+          highScores.removeRange(
+            5,
+            highScores.length,
+          );
         }
-      }
 
-      highScores.add(score);
-
-      // Put the highest scores first.
-      highScores.sort((a, b) => b.compareTo(a));
-
-      // Keep only the top 5 scores.
-      if (highScores.length > 5) {
-        highScores.removeRange(5, highScores.length);
-      }
-
-      setState(() {
         activeScreen = 'results-screen';
-      });
-    }
+      }
+    });
   }
 
   void restartQuiz() {
     setState(() {
       selectedAnswers = [];
+      score = 0;
       activeScreen = 'questions-screen';
     });
   }
@@ -74,6 +84,7 @@ class _QuizState extends State<Quiz> {
   void returnToStartScreen() {
     setState(() {
       selectedAnswers = [];
+      score = 0;
       activeScreen = 'start-screen';
     });
   }
@@ -88,6 +99,9 @@ class _QuizState extends State<Quiz> {
     if (activeScreen == 'questions-screen') {
       screenWidget = QuestionsScreen(
         onSelectAnswer: chooseAnswer,
+
+        // L4: Pass the current score to the question screen.
+        score: score,
       );
     }
 
@@ -103,12 +117,18 @@ class _QuizState extends State<Quiz> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      // L1: Apply the custom app-wide color scheme.
+      // L1: Apply the custom color scheme throughout the app.
       theme: ThemeData(
         colorScheme: quizColorScheme,
-        scaffoldBackgroundColor: const Color.fromARGB(255, 31, 10, 61),
 
-        // L1: Consistent text styles used throughout the app.
+        scaffoldBackgroundColor: const Color.fromARGB(
+          255,
+          31,
+          10,
+          61,
+        ),
+
+        // L1: Consistent text styles.
         textTheme: const TextTheme(
           headlineSmall: TextStyle(
             color: Colors.white,
@@ -125,21 +145,33 @@ class _QuizState extends State<Quiz> {
             fontSize: 16,
           ),
           bodyMedium: TextStyle(
-            color: Color.fromARGB(255, 222, 205, 250),
+            color: Color.fromARGB(
+              255,
+              222,
+              205,
+              250,
+            ),
             fontSize: 14,
           ),
         ),
 
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color.fromARGB(255, 45, 16, 83),
+          backgroundColor: Color.fromARGB(
+            255,
+            45,
+            16,
+            83,
+          ),
           foregroundColor: Colors.white,
           centerTitle: true,
         ),
 
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: quizColorScheme.primaryContainer,
-            foregroundColor: quizColorScheme.onPrimaryContainer,
+            backgroundColor:
+                quizColorScheme.primaryContainer,
+            foregroundColor:
+                quizColorScheme.onPrimaryContainer,
           ),
         ),
 
@@ -151,7 +183,8 @@ class _QuizState extends State<Quiz> {
 
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-            foregroundColor: quizColorScheme.secondary,
+            foregroundColor:
+                quizColorScheme.secondary,
           ),
         ),
       ),
@@ -161,9 +194,24 @@ class _QuizState extends State<Quiz> {
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color.fromARGB(255, 54, 20, 105),
-                Color.fromARGB(255, 104, 55, 163),
-                Color.fromARGB(255, 35, 14, 75),
+                Color.fromARGB(
+                  255,
+                  54,
+                  20,
+                  105,
+                ),
+                Color.fromARGB(
+                  255,
+                  104,
+                  55,
+                  163,
+                ),
+                Color.fromARGB(
+                  255,
+                  35,
+                  14,
+                  75,
+                ),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,

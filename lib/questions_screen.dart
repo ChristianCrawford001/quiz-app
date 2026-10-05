@@ -6,9 +6,11 @@ class QuestionsScreen extends StatefulWidget {
   const QuestionsScreen({
     super.key,
     required this.onSelectAnswer,
+    required this.score,
   });
 
   final void Function(String answer) onSelectAnswer;
+  final int score;
 
   @override
   State<QuestionsScreen> createState() {
@@ -21,10 +23,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
   void answerQuestion(String selectedAnswer) {
     widget.onSelectAnswer(selectedAnswer);
-    // currentQuestionIndex = currentQuestionIndex + 1;
-    // currentQuestionIndex += 1;
+
     setState(() {
-      currentQuestionIndex++; // increments the value by 1
+      currentQuestionIndex++;
     });
   }
 
@@ -40,16 +41,25 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // L4: Display the current score live during the quiz.
             Text(
-              currentQuestion.text,
-              style: const TextStyle(
-                color:  Color.fromARGB(255, 201, 153, 251),
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              'Score: ${widget.score}',
+              style: Theme.of(context).textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
+
             const SizedBox(height: 30),
+
+            Text(
+              currentQuestion.text,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+
+            const SizedBox(height: 30),
+
             ...currentQuestion.getShuffledAnswers().map((answer) {
               return AnswerButton(
                 answerText: answer,
@@ -57,7 +67,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                   answerQuestion(answer);
                 },
               );
-            })
+            }),
           ],
         ),
       ),
